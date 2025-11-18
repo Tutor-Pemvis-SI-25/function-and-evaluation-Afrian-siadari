@@ -1,0 +1,331 @@
+name: Autograding Tests
+on:
+  workflow_dispatch: {}
+  repository_dispatch: {}
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    ###############################################
+    # ============= TEST 01 =======================
+    ###############################################
+    - name: t01-update-task
+      id: t01-update-task
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: t01-update-task
+        setup-command: make compile
+        command: make -s test_01
+        input: |
+          Add task
+          Tugas 1
+          12S1101
+          Sistem Informasi
+          Dosen A
+          10 November 2023
+          FileA
+          5
+          2
+          Belum Selesai
+          Update task status
+          12S1101
+          Selesai
+          Show assigment
+          ---
+        expected-output: |
+          Prioritas: 2.50
+          Tugas 1|12S1101|Sistem Informasi|Dosen A|FileA|Selesai
+        comparison-method: exact
+        timeout: 1
+        max-score: 20
+
+    ###############################################
+    # ============= TEST 02 =======================
+    ###############################################
+    - name: t02-multiple-add-update
+      id: t02-multiple-add-update
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: t02-multiple-add-update
+        setup-command: make compile
+        command: make -s test_02
+        input: |
+          Add task
+          Tugas A
+          11S1102
+          Pemrograman
+          Dosen B
+          12 November 2023
+          FileB
+          3
+          3
+          Belum Selesai
+          Add task
+          Tugas B
+          11S1103
+          Basis Data
+          Dosen C
+          14 November 2023
+          FileC
+          5
+          1
+          Belum Selesai
+          Update task status
+          11S1103
+          Selesai
+          Show assigment
+          ---
+        expected-output: |
+          Prioritas: 5.00
+          Tugas B|11S1103|Basis Data|Dosen C|FileC|Selesai
+          Prioritas: 1.00
+          Tugas A|11S1102|Pemrograman|Dosen B|12 November 2023|FileB|Belum Selesai|Tugas ini relatif ringan, namun jangan tunda terlalu lama
+        comparison-method: exact
+        timeout: 1
+        max-score: 20
+
+    ###############################################
+    # ============= TEST 03 =======================
+    ###############################################
+    - name: t03-update-nonexistent
+      id: t03-update-nonexistent
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: t03-update-nonexistent
+        setup-command: make compile
+        command: make -s test_03
+        input: |
+          Add task
+          Tugas C
+          10S2201
+          Algoritma
+          Dosen D
+          15 November 2023
+          FileD
+          4
+          4
+          Belum Selesai
+          Update task status
+          XX9999
+          Selesai
+          Show assigment
+          ---
+        expected-output: |
+          Prioritas: 1.00
+          Tugas C|10S2201|Algoritma|Dosen D|15 November 2023|FileD|Belum Selesai|Tugas ini relatif ringan, namun jangan tunda terlalu lama
+        comparison-method: exact
+        timeout: 1
+        max-score: 20
+
+    ###############################################
+    # ============= TEST 04 =======================
+    ###############################################
+    - name: t04-sorting-priority
+      id: t04-sorting-priority
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: t04-sorting-priority
+        setup-command: make compile
+        command: make -s test_04
+        input: |
+          Add task
+          Tugas X
+          AA01
+          Matematika
+          Dosen X
+          20 November 2023
+          FX
+          5
+          1
+          Belum Selesai
+          Add task
+          Tugas Y
+          BB02
+          Fisika
+          Dosen Y
+          25 November 2023
+          FY
+          3
+          5
+          Belum Selesai
+          Show assigment
+          ---
+        expected-output: |
+          Prioritas: 5.00
+          Tugas X|AA01|Matematika|Dosen X|20 November 2023|FX|Belum Selesai|Penting! Anda harus mengerjakan tugas ini segera
+          Prioritas: 0.60
+          Tugas Y|BB02|Fisika|Dosen Y|25 November 2023|FY|Belum Selesai|Tugas ini relatif ringan, namun jangan tunda terlalu lama
+        comparison-method: exact
+        timeout: 1
+        max-score: 20
+
+    ###############################################
+    # ============= TEST 05 =======================
+    ###############################################
+    - name: t05-max-task-limit
+      id: t05-max-task-limit
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: t05-max-task-limit
+        setup-command: make compile
+        command: make -s test_05
+        input: |
+          Add task
+          A1
+          X1
+          M1
+          D1
+          T1
+          F1
+          3
+          1
+          Belum Selesai
+          Add task
+          A2
+          X2
+          M2
+          D2
+          T2
+          F2
+          3
+          1
+          Belum Selesai
+          Add task
+          A3
+          X3
+          M3
+          D3
+          T3
+          F3
+          3
+          1
+          Belum Selesai
+          Add task
+          A4
+          X4
+          M4
+          D4
+          T4
+          F4
+          3
+          1
+          Belum Selesai
+          Add task
+          A5
+          X5
+          M5
+          D5
+          T5
+          F5
+          3
+          1
+          Belum Selesai
+          Add task
+          A6
+          X6
+          M6
+          D6
+          T6
+          F6
+          3
+          1
+          Belum Selesai
+          Add task
+          A7
+          X7
+          M7
+          D7
+          T7
+          F7
+          3
+          1
+          Belum Selesai
+          Add task
+          A8
+          X8
+          M8
+          D8
+          T8
+          F8
+          3
+          1
+          Belum Selesai
+          Add task
+          A9
+          X9
+          M9
+          D9
+          T9
+          F9
+          3
+          1
+          Belum Selesai
+          Add task
+          A10
+          X10
+          M10
+          D10
+          T10
+          F10
+          3
+          1
+          Belum Selesai
+          Add task
+          A11
+          X11
+          M11
+          D11
+          T11
+          F11
+          3
+          1
+          Belum Selesai
+          Show assigment
+          ---
+        expected-output: |
+          Prioritas: 3.00
+          A1|X1|M1|D1|T1|F1|Belum Selesai|Tugas ini memiliki prioritas menengah
+          Prioritas: 3.00
+          A2|X2|M2|D2|T2|F2|Belum Selesai|Tugas ini memiliki prioritas menengah
+          Prioritas: 3.00
+          A3|X3|M3|D3|T3|F3|Belum Selesai|Tugas ini memiliki prioritas menengah
+          Prioritas: 3.00
+          A4|X4|M4|D4|T4|F4|Belum Selesai|Tugas ini memiliki prioritas menengah
+          Prioritas: 3.00
+          A5|X5|M5|D5|T5|F5|Belum Selesai|Tugas ini memiliki prioritas menengah
+          Prioritas: 3.00
+          A6|X6|M6|D6|T6|F6|Belum Selesai|Tugas ini memiliki prioritas menengah
+          Prioritas: 3.00
+          A7|X7|M7|D7|T7|F7|Belum Selesai|Tugas ini memiliki prioritas menengah
+          Prioritas: 3.00
+          A8|X8|M8|D8|T8|F8|Belum Selesai|Tugas ini memiliki prioritas menengah
+          Prioritas: 3.00
+          A9|X9|M9|D9|T9|F9|Belum Selesai|Tugas ini memiliki prioritas menengah
+          Prioritas: 3.00
+          A10|X10|M10|D10|T10|F10|Belum Selesai|Tugas ini memiliki prioritas menengah
+        comparison-method: exact
+        timeout: 1
+        max-score: 20
+
+    ###############################################
+    # ============= REPORTER ======================
+    ###############################################
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        T01-UPDATE-TASK_RESULTS: "${{steps.t01-update-task.outputs.result}}"
+        T02-MULTIPLE-ADD-UPDATE_RESULTS: "${{steps.t02-multiple-add-update.outputs.result}}"
+        T03-UPDATE-NONEXISTENT_RESULTS: "${{steps.t03-update-nonexistent.outputs.result}}"
+        T04-SORTING-PRIORITY_RESULTS: "${{steps.t04-sorting-priority.outputs.result}}"
+        T05-MAX-TASK-LIMIT_RESULTS: "${{steps.t05-max-task-limit.outputs.result}}"
+      with:
+        runners: t01-update-task,t02-multiple-add-update,t03-update-nonexistent,t04-sorting-priority,t05-max-task-limit
